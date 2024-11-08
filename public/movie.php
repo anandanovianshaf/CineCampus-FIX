@@ -45,11 +45,11 @@
                         PLAY TRAILER
                     </a>
                     <div class="w-10/12 flex flex-row gap-x-4 mt-5">
-                    <a href="/ratings"
+                    <a href="ratings.php"
                     class="w-fit text-white mt-14 px-4 py-2 rounded-full text-sm font-inter hover:drop-shadow-lg duration-200">
                         ULASAN
                     </a>
-                    <a href="ratings" 
+                    <a href="discuss.php" 
                     class="w-fit text-white mt-14 px-4 py-2 rounded-full text-sm font-inter hover:drop-shadow-lg duration-200">
                         FORUM DISKUSI
                     </a>
@@ -125,9 +125,7 @@
 
 <div class="footer bg-black flex justify-between items-center py-6 px-10 text-gray-400 text-sm">
     <div class="footer-links flex gap-8">
-        <a href="#" class="hover:text-white">GIVE RATING</a>
-        <a href="#" class="hover:text-white">GIVE REVIEW</a>
-        <a href="#" class="hover:text-white">DISCUSSION FORUM</a>
+        
     </div>
     <div class="social-links flex gap-4">
         <a href="https://instagram.com" target="_blank" class="hover:text-white"><i class='bx bxl-instagram text-2xl'></i></a>

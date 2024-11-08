@@ -1,3 +1,8 @@
+<?php
+    session_start();
+    include("connect.php");
+?>
+
 <div class="w-full bg-black h-[94px] flex items-center px-5 md:px-10">
     <!-- Bagian Logo dan Menu -->
     <div class="flex w-1/2 items-center">
@@ -6,10 +11,10 @@
             <span class="text-white text-2xl">CAMPUS</span>
         </a>
         <nav class="hidden md:flex ml-5 space-x-3" id="nav-menu">
-            <a href="#home" class="uppercase text-sm text-white font-inter">Home</a>
-            <a href="#trending" class="uppercase text-sm text-white font-inter">Trending</a>
-            <a href="#premier" class="uppercase text-sm text-white font-inter">Premier</a>
-            <a href="#genres" class="uppercase text-sm text-white font-inter">Genres</a>
+            <a href="home.php" class="uppercase text-sm text-white font-inter">Home</a>
+            <a href="home.php" class="uppercase text-sm text-white font-inter">Trending</a>
+            <a href="home.php" class="uppercase text-sm text-white font-inter">Premier</a>
+            <a href="home.php" class="uppercase text-sm text-white font-inter">Genres</a>
         </nav>
     </div>
 
@@ -31,17 +36,24 @@
             </svg>
         </button>
 
-        <!-- User Button -->
-        <a href="/user" class="ml-4 text-white">User</a>
+        <!-- Logout Button -->
+        <a href="#" onclick="confirmLogout(event)" class="ml-4 mr-3 pr-4 text-white hover:text-red-500 transition duration-500">
+            <i class='bx bx-log-out-circle text-2xl'></i>
+        </a>
     </div>
 </div>
 
-<!-- JavaScript for Hamburger Menu -->
+<!-- JavaScript for Logout Confirmation -->
 <script>
-    const mobileMenuButton = document.getElementById('mobile-menu-button');
-    const navMenu = document.getElementById('nav-menu');
+    function confirmLogout(event) {
+        event.preventDefault(); // Menghentikan default action (pengalihan halaman)
 
-    mobileMenuButton.addEventListener('click', () => {
-        navMenu.classList.toggle('hidden');
-    });
+        // Menampilkan konfirmasi logout
+        const confirmation = confirm("Are you sure you want to logout?");
+        
+        if (confirmation) {
+            // Jika memilih 'Yes', mengarahkan ke login.php
+            window.location.href = 'logout.php'; 
+        }
+    }
 </script>
