@@ -1,5 +1,4 @@
 <?php
-    session_start();
     include("connect.php");
 ?>
 
@@ -21,11 +20,9 @@
     <!-- Search & Menu Toggle (Mobile) -->
     <div class="flex w-1/2 justify-end items-center">
         <!-- Search Button -->
-        <a href="/search" class="hidden md:block">
-            <!-- SVG Search Icon -->
-            <svg width="24" height="24" class =" text-white hover:text-blue-500" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M10 17a7 7 0 100-14 7 7 0 000 14zM21   21l-5.2-5.2" stroke="#FFF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>
+        <!-- Search Button -->
+        <a href="search.php" class="ml-4 text-white hover:text-red-500 transition duration-500">
+            <i class='bx bx-search text-2xl'></i>
         </a>
         
         <!-- Mobile Menu Toggle -->
