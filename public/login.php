@@ -12,6 +12,7 @@ if (isset($_POST['login'])) {
     if ($result->num_rows > 0) {
         // Login sukses, simpan data session
         $row = $result->fetch_assoc();
+        $_SESSION['user_id'] = $row['id'];
         $_SESSION['nim'] = $row['nim'];
         $_SESSION['nama'] = $row['nama'];
         

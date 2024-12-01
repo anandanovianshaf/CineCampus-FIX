@@ -1,123 +1,164 @@
+<?php
+session_start();
+include 'connect.php';  // Menggunakan koneksi dari connect.php
+
+// Ambil last movie ID dari session
+$movie_id = isset($_SESSION['last_movie_id']) ? $_SESSION['last_movie_id'] : 0;
+
+// Ambil nama film berdasarkan ID terakhir
+$sql = "SELECT name FROM movies WHERE id = ?";
+$stmt = $conn->prepare($sql);
+$stmt->bind_param("i", $movie_id);
+$stmt->execute();
+$result = $stmt->get_result();
+
+if ($result->num_rows > 0) {
+    $movie = $result->fetch_assoc();
+    $lastMovieName = $movie['name'];
+} else {
+    $lastMovieName = "Unknown Movie";
+}
+
+// Ambil komentar-komentar untuk film tersebut
+$sql = "SELECT d.id, d.discussion_text, u.nama as username, d.created_at 
+        FROM discussions d 
+        JOIN users u ON d.user_id = u.id
+        WHERE d.movie_id = ? AND d.parent_id IS NULL
+        ORDER BY d.created_at DESC";
+$stmt = $conn->prepare($sql);
+$stmt->bind_param("i", $movie_id);
+$stmt->execute();
+$result = $stmt->get_result();
+$comments = [];
+while ($row = $result->fetch_assoc()) {
+    $comments[] = $row;
+}
+
+// Ambil balasan untuk setiap komentar
+foreach ($comments as &$comment) {
+    $comment_id = $comment['id'];
+    $sql_replies = "SELECT d.id, d.discussion_text, u.nama as username, d.created_at 
+                    FROM discussions d 
+                    JOIN users u ON d.user_id = u.id
+                    WHERE d.parent_id = ? 
+                    ORDER BY d.created_at ASC";
+    $stmt_replies = $conn->prepare($sql_replies);
+    $stmt_replies->bind_param("i", $comment_id);
+    $stmt_replies->execute();
+    $replies_result = $stmt_replies->get_result();
+    $replies = [];
+    while ($reply = $replies_result->fetch_assoc()) {
+        $replies[] = $reply;
+    }
+    $comment['replies'] = $replies;
+}
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>CineCampus</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/boxicons/2.1.4/css/boxicons.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="css/style.css"/>
+    <link rel="stylesheet" href="css/style.css">
 </head>
-<body class="bg-gradient-to-b from-bg_red via-bg_red to-bg_red_2 text-white">
-<div class="min-h-screen bg-gradient-to-b from-bg_red via-bg_red to-bg_red_2 text-white flex flex-col items-center">
-    <!-- Header Section -->
-    <?php include 'header.php' ?>
+<body class="bg-gradient-to-b from-bg_red via-bg_red to-bg_red_2 text-white flex flex-col min-h-screen">
+    <div class="flex-1">
+        <?php include 'header.php'; ?>
 
-    <!-- ISI KONTEN DISCUSSION PAGE -->
-    <div class="max-w-4xl mx-auto p-8">
-        <!-- Title Section -->
-        <div class="text-center flex flex-row gap-8 mb-8">
-            <h1 class="text-3xl font-bold mb-6">Discussion Forum</h1>
-            <p class="text-lg mt-2 font-semibold">13 BOM DI JAKARTA</p>
-        </div>
+        <div class="max-w-4xl mx-auto p-8">
+            <div class="text-center flex flex-row gap-8 mb-8">
+                <h1 class="text-3xl font-bold mb-6">Discussion Forum</h1>
+                <p class="text-lg mt-2 font-semibold"><?php echo htmlspecialchars($lastMovieName); ?></p>
+            </div>
 
-        <!-- Discussion Comments -->
-        <div class="space-y-6">
-            <!-- Komentar akan di-load di sini -->
-        </div>
-
-        <!-- Comment Input -->
-        <div class="flex items-center space-x-4 mt-8">
-            <i class='bx bxs-user-circle text-4xl'></i>
-            <input id="commentInput" class="flex-1 bg-gray-700 text-white rounded-full px-4 py-2 text-sm" placeholder="Type Here">
-            <button id="submitComment" type="button" class="text-white bg-gray-700 px-4 py-2 rounded-lg text-sm">Send</button>
-        </div>
-    </div>
-</div>
-
-<!-- Footer Section -->
-<?php include 'footer.php'; ?>
-
-<script>
-    // Fungsi untuk mengambil dan menampilkan komentar
-    function fetchComments() {
-        fetch('fetch_comments.php')
-            .then(response => response.json())
-            .then(comments => {
-                const commentSection = document.querySelector('.space-y-6');
-                commentSection.innerHTML = ''; // Bersihkan komentar yang ada
-
-                comments.forEach(comment => {
-                    const commentDiv = document.createElement('div');
-                    commentDiv.classList.add('flex', 'items-start', 'mb-6', 'space-x-4');
-                    commentDiv.innerHTML = `
-                        <div class="bg-gray-500 rounded-full w-12 h-12 flex items-center justify-center">
-                            <i class='bx bxs-user text-2xl text-white'></i>
-                        </div>
-                        <div class="bg-gray-800 p-4 rounded-lg flex-1 text-sm">
-                            <p>${comment.comment_text}</p>
-                            <div class="flex space-x-4 mt-2 text-gray-400">
-                                <button class="hover:text-red-500">
-                                    <i class='bx bx-heart'></i>
-                                </button>
-                                <button class="hover:text-blue-500">
-                                    <i class='bx bx-share-alt'></i>
-                                </button>
-                                <button class="hover:text-green-500">
-                                    <i class='bx bx-edit'></i>
-                                </button>
-                                <button class="hover:text-white px-3 py-1 rounded-lg text-xs">Reply</button>
-                                <button onclick="deleteComment(${comment.id})" class="hover:text-red-700 px-3 py-1 rounded-lg text-xs">Delete</button>
+            <!-- Discussion Comments -->
+            <div class="space-y-6" id="commentContainer">
+                <?php if (count($comments) == 0): ?>
+                    <p id="noCommentsMessage" class="text-center text-white">We don't have any discussion yet.</p>
+                <?php else: ?>
+                    <?php foreach ($comments as $comment): ?>
+                        <div class="flex flex-col md:flex-row items-start mb-6 space-y-4 md:space-y-0 md:space-x-4">
+                            <div class="bg-gray-500 rounded-full w-12 h-12 flex items-center justify-center">
+                                <i class='bx bxs-user text-2xl text-white'></i>
+                            </div>
+                            <div class="bg-gray-800 p-6 rounded-lg flex-1 text-sm">
+                                <p><strong><?php echo htmlspecialchars($comment['username']); ?>:</strong> <?php echo htmlspecialchars($comment['discussion_text']); ?></p>
+                                <div class=" bg-black bg-opacity-30 backdrop-blur-md mt-4 w-fit p-3 rounded-lg inline-block text-xs text-white px-2 py-1">
+                                    <p><?php echo date('d M Y', strtotime($comment['created_at'])); ?></p>
+                                </div>
                             </div>
                         </div>
-                    `;
-                    commentSection.appendChild(commentDiv);
-                });
-            });
-    }
+                    <?php endforeach; ?>
+                <?php endif; ?>
+            </div>
 
-    // Fungsi untuk mengirimkan komentar
-    document.getElementById('submitComment').addEventListener('click', function() {
-        const commentInput = document.getElementById('commentInput');
-        const comment = commentInput.value.trim();
+            <!-- Comment Input -->
+            <div class="flex items-center space-x-4 mt-8">
+                <i class='bx bxs-user-circle text-4xl'></i>
+                <form id="commentForm">
+                    <input id="discussionText" class="flex-1 bg-gray-700 text-white rounded-full px-4 py-2 text-sm" name="discussion_text" placeholder="Type Here" required>
+                    <button type="submit" class="text-white bg-gray-700 px-4 py-2 rounded-lg text-sm">Send</button>
+                </form>
+            </div>
+            <p id="errorMessage" class="text-red-500 mt-2 hidden"></p>
+        </div>
+    </div>
 
-        if (comment) {
-            fetch('submit_comment.php', {
+    <?php include 'footer.php'; ?>
+
+    <script>
+        const commentForm = document.getElementById('commentForm');
+        const discussionText = document.getElementById('discussionText');
+        const commentContainer = document.getElementById('commentContainer');
+        const errorMessage = document.getElementById('errorMessage');
+        const noCommentsMessage = document.getElementById('noCommentsMessage');
+
+        commentForm.addEventListener('submit', function (e) {
+            e.preventDefault();
+
+            const commentText = discussionText.value.trim();
+            if (commentText === '') {
+                errorMessage.textContent = 'Please write a comment before submitting.';
+                errorMessage.classList.remove('hidden');
+                return;
+            }
+
+            const formData = new FormData();
+            formData.append('discussion_text', commentText);
+
+            fetch('add_comment.php', {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/x-www-form-urlencoded'
-                },
-                body: 'comment=' + encodeURIComponent(comment)
+                body: formData,
             })
-            .then(response => response.text())
+            .then(response => response.json())
             .then(data => {
-                commentInput.value = ''; // Bersihkan input
-                fetchComments(); // Segarkan daftar komentar
-            });
-        }
-    });
+                if (data.success) {
+                    const newComment = `
+                        <div class="flex items-start mb-6 space-x-4">
+                            <div class="bg-gray-500 rounded-full w-12 h-12 flex items-center justify-center">
+                                <i class='bx bxs-user text-2xl text-white'></i>
+                            </div>
+                            <div class="bg-gray-800 p-4 rounded-lg flex-1 text-sm">
+                                <p><strong>${data.username}:</strong> ${data.comment_text}</p>
+                            </div>
+                        </div>`;
+                    commentContainer.innerHTML += newComment;
 
-    // Fungsi untuk menghapus komentar
-    function deleteComment(commentId) {
-        if (confirm("Apakah Anda yakin ingin menghapus komentar ini?")) {
-            fetch('delete_comment.php', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/x-www-form-urlencoded'
-                },
-                body: 'id=' + encodeURIComponent(commentId)
+                    if (noCommentsMessage) {
+                        noCommentsMessage.remove();
+                    }
+                    discussionText.value = '';
+                } else {
+                    errorMessage.textContent = data.message || 'your comment has been submitted, refresh to get newer discuss';
+                    errorMessage.classList.remove('hidden');
+                }
             })
-            .then(response => response.text())
-            .then(data => {
-                fetchComments(); // Refresh daftar komentar setelah penghapusan
+            .catch(() => {
+                errorMessage.textContent = 'An error occurred. Please try again.';
+                errorMessage.classList.remove('hidden');
             });
-        }
-    }
-
-    // Ambil komentar ketika halaman dimuat
-    window.onload = function() {
-        fetchComments();
-    };
-</script>
-
+        });
+    </script>
 </body>
 </html>

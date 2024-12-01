@@ -53,10 +53,13 @@
                 <!-- Submit Button -->
                 <button type="submit" class="mt-8 text-xs bg-white text-black px-4 py-2 rounded hover:bg-gray-300 transition duration-200">SUBMIT</button>
             </form>
+            <div class ="mt-12 text-xs text-white">
+                <p>Can't find the movie? <a href="https://forms.gle/6uDUu3U9PZHVMDY46" target="_blank" class="bg-white bg-opacity-30 rounded px-3 text-black hover:text-white transition duration-300">Submit here</a> to request a movie!</p>
+            </div>
         </div>
     </main>
 
     <!-- Footer Section -->
-    <?php include 'footer.php'; ?>
+    <?php include 'footer-home.php'; ?>
 </body>
 </html>

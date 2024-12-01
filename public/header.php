@@ -11,9 +11,9 @@
         </a>
         <nav class="hidden md:flex ml-5 space-x-3" id="nav-menu">
             <a href="home.php" class="uppercase text-sm text-white font-inter">Home</a>
-            <a href="#trending" class="uppercase text-sm text-white font-inter">Trending</a>
-            <a href="#premier" class="uppercase text-sm text-white font-inter">Premier</a>
-            <a href="#genres" class="uppercase text-sm text-white font-inter">Genres</a>
+            <a href="home.php#trending" class="uppercase text-sm text-white font-inter">Trending</a>
+            <a href="home.php#premier" class="uppercase text-sm text-white font-inter">Premier</a>
+            <a href="home.php#genres" class="uppercase text-sm text-white font-inter">Genres</a>
         </nav>
     </div>
 

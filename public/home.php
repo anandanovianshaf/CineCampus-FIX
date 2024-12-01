@@ -1,3 +1,20 @@
+<?php
+// Memulai sesi
+session_start();
+
+// Mengecek apakah sesi 'nim' ada, jika tidak, redirect ke login
+if (!isset($_SESSION['nim'])) {
+    header("Location: login.php");
+    exit();
+}
+
+// Menyimpan data sesi ke dalam variabel
+$nim = $_SESSION['nim'];
+$nama = $_SESSION['nama'];
+
+
+?>
+
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -11,7 +28,7 @@
         
   </head>
   <body>
-    <div class="w-full h-auto min-h-screen flex flex-col bg-gradient-to-b from-background1 via-background1 to-background2">
+    <div class="w-full min-h-screen flex flex-col bg-gradient-to-b from-background1 via-background1 to-background2">
             <!-- Header Section -->
             <?php include 'header.php'; ?>
             <!-- Banner Section -->
@@ -329,18 +346,18 @@
             </div>
 
             <div class="flex justity-center gap-[85px] w-full flex-row mt-10">
-                <a href="genre.php?genre=Action" class="w-fit bg-white text-black pl-5 pr-5 py-2 mt-5 text-inter text-3sm flex flex-row rounded-[10px] items-center hover:drop-shadow-lg duration-200">Action - Adventures</a>
+                <a href="genre.php?genre=Action" class="w-fit bg-white text-black pl-5 pr-5 py-2 mt-5 text-inter text-3sm flex flex-row rounded-[10px] items-center hover:drop-shadow-lg duration-200">Action</a>
+                <a href="genre.php?genre=Adventure" class="w-fit bg-white text-black pl-5 pr-5 py-2 mt-5 text-inter text-3sm flex flex-row rounded-[10px] items-center hover:drop-shadow-lg duration-200">Adventures</a>
                 <a href="genre.php?genre=Animation" class="w-fit bg-white text-black pl-5 pr-5 py-2 mt-5 text-inter text-3sm flex flex-row rounded-[10px] items-center hover:drop-shadow-lg duration-200">Animation</a>
                 <a href="genre.php?genre=Anime" class="w-fit bg-white text-black pl-5 pr-5 py-2 mt-5 text-inter text-3sm flex flex-row rounded-[10px] items-center hover:drop-shadow-lg duration-200">Anime</a>
                 <a href="genre.php?genre=Biography" class="w-fit bg-white text-black pl-5 pr-5 py-2 mt-5 text-inter text-3sm flex flex-row rounded-[10px] items-center hover:drop-shadow-lg duration-200">Biography</a>
                 <a href="genre.php?genre=Crime" class="w-fit bg-white text-black pl-5 pr-5 py-2 mt-5 text-inter text-3sm flex flex-row rounded-[10px] items-center hover:drop-shadow-lg duration-200">Crime</a>
-                <a href="genre.php?genre=Comedy" class="w-fit bg-white text-black pl-5 pr-5 py-2 mt-5 text-inter text-3sm flex flex-row rounded-[10px] items-center hover:drop-shadow-lg duration-200">Comedy</a>
             </div>
-
+            
             <div class="flex justity-center gap-[107px] w-full flex-row mt-10">
+                <a href="genre.php?genre=Comedy" class="w-fit bg-white text-black pl-5 pr-5 py-2 mt-5 text-inter text-3sm flex flex-row rounded-[10px] items-center hover:drop-shadow-lg duration-200">Comedy</a>
                 <a href="genre.php?genre=Documentary" class="w-fit bg-white text-black pl-5 pr-5 py-2 mt-5 text-inter text-3sm flex flex-row rounded-[10px] items-center hover:drop-shadow-lg duration-200">Documentary</a>
                 <a href="genre.php?genre=Drama" class="w-fit bg-white text-black pl-5 pr-5 py-2 mt-5 text-inter text-3sm flex flex-row rounded-[10px] items-center hover:drop-shadow-lg duration-200">Drama</a>
-                <a href="genre.php?genre=Epic" class="w-fit bg-white text-black pl-5 pr-5 py-2 mt-5 text-inter text-3sm flex flex-row rounded-[10px] items-center hover:drop-shadow-lg duration-200">Epic</a>
                 <a href="genre.php?genre=Family" class="w-fit bg-white text-black pl-5 pr-5 py-2 mt-5 text-inter text-3sm flex flex-row rounded-[10px] items-center hover:drop-shadow-lg duration-200">Family</a>
                 <a href="genre.php?genre=Fantasy" class="w-fit bg-white text-black pl-5 pr-5 py-2 mt-5 text-inter text-3sm flex flex-row rounded-[10px] items-center hover:drop-shadow-lg duration-200">Fantasy</a>
                 <a href="genre.php?genre=History" class="w-fit bg-white text-black pl-5 pr-5 py-2 mt-5 text-inter text-3sm flex flex-row rounded-[10px] items-center hover:drop-shadow-lg duration-200">History</a>
@@ -358,14 +375,14 @@
             <div class="flex justity-center gap-[120px] w-full flex-row mt-10">
                 <a href="genre.php?genre=SCI-FI" class="w-fit bg-white text-black pl-5 pr-5 py-2 mt-5 text-inter text-3sm flex flex-row rounded-[10px] items-center hover:drop-shadow-lg duration-200">SCI-FI</a>
                 <a href="genre.php?genre=Sports" class="w-fit bg-white text-black pl-5 pr-5 py-2 mt-5 text-inter text-3sm flex flex-row rounded-[10px] items-center hover:drop-shadow-lg duration-200">Sports</a>
-                <a href="genre.php?genre=Spy's" class="w-fit bg-white text-black pl-5 pr-5 py-2 mt-5 text-inter text-3sm flex flex-row rounded-[10px] items-center hover:drop-shadow-lg duration-200">Spy's</a>
+                <a href="genre.php?genre=Spy" class="w-fit bg-white text-black pl-5 pr-5 py-2 mt-5 text-inter text-3sm flex flex-row rounded-[10px] items-center hover:drop-shadow-lg duration-200">Spy</a>
                 <a href="genre.php?genre=Thriller" class="w-fit bg-white text-black pl-5 pr-5 py-2 mt-5 text-inter text-3sm flex flex-row rounded-[10px] items-center hover:drop-shadow-lg duration-200">Thriller</a>
-                <a href="genre.php?genre=WAR" class="w-fit bg-white text-black pl-5 pr-5 py-2 mt-5 text-inter text-3sm flex flex-row rounded-[10px] items-center hover:drop-shadow-lg duration-200">WAR</a>
+                <a href="genre.php?genre=War" class="w-fit bg-white text-black pl-5 pr-5 py-2 mt-5 text-inter text-3sm flex flex-row rounded-[10px] items-center hover:drop-shadow-lg duration-200">War</a>
                 <a href="genre.php?genre=Zombie" class="w-fit bg-white text-black pl-5 pr-5 py-2 mt-5 text-inter text-3sm flex flex-row rounded-[10px] items-center hover:drop-shadow-lg duration-200">Zombie</a>
             </div>
         </div>
 
-        <?php include 'footer.php'; ?>
+        <?php include 'footer-home.php'; ?>
     </div>
   </body>
 </html>

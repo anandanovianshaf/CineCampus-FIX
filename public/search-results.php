@@ -59,17 +59,29 @@ if ($result->num_rows > 0) {
             <div class="mt-8 space-y-6">
                 <?php if (!empty($movies)): ?>
                     <?php foreach ($movies as $movie): ?>
-                        <div class="movie-container flex bg-white bg-opacity-10 rounded-lg shadow-md p-4">
-                            <!-- Movie Poster -->
-                            <img src="<?php echo htmlspecialchars($movie['poster']); ?>" alt="<?php echo htmlspecialchars($movie['name']); ?> Poster" class="w-24 h-36 object-cover rounded-md mr-4">
-                            <!-- Movie Details -->
-                            <div>
-                                <h2 class="ml-4 text-xl font-bold"><?php echo htmlspecialchars($movie['name']); ?></h2>
-                                <p class="ml-4 text-sm mt-1 text-gray-300"><?php echo htmlspecialchars($movie['age_certificate']); ?> | <?php echo htmlspecialchars($movie['duration']); ?></p>
-                                <p class="ml-4 mb-6 text-sm mt-1 text-gray-300">Actors: <?php echo htmlspecialchars($movie['actors']); ?></p>
-                                <a href="movie.php?id=<?php echo $movie['id']; ?>" class="bg-background2 text-xs ml-4 text-white py-2 px-4 rounded opacity-0 group-hover:opacity-100 transition-opacity duration-300">Detail</a>
-                            </div>
-                        </div>
+                        <div class="movie-container flex bg-white bg-opacity-10 rounded-lg shadow-md p-4 group">
+    <!-- Movie Poster -->
+    <img src="<?php echo htmlspecialchars($movie['poster']); ?>" 
+         alt="<?php echo htmlspecialchars($movie['name']); ?> Poster" 
+         class="w-24 h-36 object-cover rounded-md mr-4">
+    <!-- Movie Details -->
+    <div>
+        <h2 class="ml-4 text-xl font-bold"><?php echo htmlspecialchars($movie['name']); ?></h2>
+        <p class="ml-4 text-sm mt-1 text-gray-300">
+            <?php echo htmlspecialchars($movie['age_certificate']); ?> | 
+            <?php echo htmlspecialchars($movie['duration']); ?>
+        </p>
+        <p class="ml-4 mb-6 text-sm mt-1 text-gray-300">
+            Actors: <?php echo htmlspecialchars($movie['actors']); ?>
+        </p>
+        <!-- Button Detail -->
+        <a href="movie.php?id=<?php echo $movie['id']; ?>" 
+           class="bg-gray-800 text-xs ml-4 text-white py-2 px-4 rounded hover:bg-white transition duration-300">
+            Detail
+        </a>
+    </div>
+</div>
+
                     <?php endforeach; ?>
                 <?php else: ?>
                       <!-- Tampilkan pesan error jika tidak ada hasil -->
@@ -85,6 +97,6 @@ if ($result->num_rows > 0) {
     </main>
 
     <!-- Footer Section -->
-    <?php include 'footer.php'; ?>
+    <?php include 'footer-home.php'; ?>
 </body>
 </html>

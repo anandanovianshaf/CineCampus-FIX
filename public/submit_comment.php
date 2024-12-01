@@ -1,26 +1,28 @@
 <?php
-$host = "localhost"; // Ganti dengan host database Anda
-$username = "root";  // Ganti dengan username database Anda
-$password = "";      // Ganti dengan password database Anda
-$database = "discussion_db"; // Nama database
+session_start();
+include 'connect.php';
 
-$conn = new mysqli($host, $username, $password, $database);
-
-if ($conn->connect_error) {
-    die("Koneksi gagal: " . $conn->connect_error);
+// Pastikan user sudah login
+if (!isset($_SESSION['user_id'])) {
+    echo "User belum login!";
+    exit;
 }
 
-if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['comment'])) {
-    $comment = $_POST['comment'];
-    $user_name = "Anonymous"; // Ganti dengan nama pengguna yang sedang login jika ada
+// Ambil data input
+$user_id = $_SESSION['user_id'];
+$movie_id = isset($_GET['id']) ? intval($_GET['id']) : 0;
+$comment_text = isset($_POST['comment']) ? $_POST['comment'] : '';
 
-    $stmt = $conn->prepare("INSERT INTO comments (user_name, comment_text) VALUES (?, ?)");
-    $stmt->bind_param("ss", $user_name, $comment);
-    $stmt->execute();
-    $stmt->close();
-
-    echo "Komentar berhasil dikirim";
+if ($movie_id <= 0 || empty($comment_text)) {
+    echo "Komentar tidak valid!";
+    exit;
 }
 
-$conn->close();
+// Masukkan komentar ke database
+$sql = "INSERT INTO comments (movie_id, user_id, comment_text, created_at) VALUES (?, ?, ?, NOW())";
+$stmt = $conn->prepare($sql);
+$stmt->bind_param("iis", $movie_id, $user_id, $comment_text);
+$stmt->execute();
+
+echo "Komentar berhasil ditambahkan!";
 ?>

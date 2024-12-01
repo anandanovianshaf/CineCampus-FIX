@@ -1,23 +1,22 @@
 <?php
 session_start();
+include 'connect.php';
 
-// Database connection
-$servername = "localhost";
-$username = "root";
-$password = "";
-$dbname = "login";
-
-// Create connection
-$conn = new mysqli($servername, $username, $password, $dbname);
-
-// Check connection
-if ($conn->connect_error) {
-    die("Connection failed: " . $conn->connect_error);
+// Periksa apakah user sudah login
+if (!isset($_SESSION['user_id'])) {
+    header("Location: login.php");
+    exit;
 }
 
-$movie_id = isset($_GET['id']) ? $_GET['id'] : 0;
+// Tangkap user_id dan last_movie_id dari session
+$user_id = $_SESSION['user_id'];
+$movie_id = $_SESSION['last_movie_id'] ?? 0;
 
-// Fetch movie details
+if ($movie_id <= 0) {
+    die("Invalid movie ID.");
+}
+
+// Fetch detail film
 $sql = "SELECT * FROM movies WHERE id = ?";
 $stmt = $conn->prepare($sql);
 $stmt->bind_param("i", $movie_id);
@@ -25,54 +24,54 @@ $stmt->execute();
 $result = $stmt->get_result();
 
 if ($result->num_rows > 0) {
-    $movie = $result->fetch_assoc(); // Fetch the movie details
+    $movie = $result->fetch_assoc(); // Ambil data film
 } else {
-    die("Movie not found.");
+    die("Film tidak ditemukan.");
 }
 
-// Store the rating if submitted
-if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['rating'])) {
-    $rating = $_POST['rating'];
+// Cek apakah rating sudah ada
+$existingRating = null;
+$checkSql = "SELECT rating FROM ratings WHERE movie_id = ? AND user_id = ?";
+$checkStmt = $conn->prepare($checkSql);
+$checkStmt->bind_param("ii", $movie_id, $user_id);
+$checkStmt->execute();
+$checkResult = $checkStmt->get_result();
 
-    // Check if there's already a rating for this movie
-    $checkRatingSql = "SELECT * FROM ratings WHERE movie_id = ?";
-    $checkStmt = $conn->prepare($checkRatingSql);
-    $checkStmt->bind_param("i", $movie_id);
-    $checkStmt->execute();
-    $checkResult = $checkStmt->get_result();
+if ($checkResult->num_rows > 0) {
+    $existingRating = $checkResult->fetch_assoc()['rating'];
+}
 
-    if ($checkResult->num_rows > 0) {
-        // Update rating if it exists
-        $updateRatingSql = "UPDATE ratings SET rating = ? WHERE movie_id = ?";
-        $updateStmt = $conn->prepare($updateRatingSql);
-        $updateStmt->bind_param("di", $rating, $movie_id);
-        $updateStmt->execute();
-    } else {
-        // Insert a new rating if it doesn't exist
-        $insertRatingSql = "INSERT INTO ratings (movie_id, rating) VALUES (?, ?)";
-        $insertStmt = $conn->prepare($insertRatingSql);
-        $insertStmt->bind_param("id", $movie_id, $rating);
-        $insertStmt->execute();
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    if (isset($_POST['enable_rating'])) {
+        // Aktifkan input rating kembali (hanya reset tampilan)
+        $existingRating = null;
+    } elseif (isset($_POST['rating'])) {
+        $rating = floatval($_POST['rating']);
+
+        // Validasi rating
+        if ($rating < 1 || $rating > 10) {
+            die("Rating harus antara 1 dan 10.");
+        }
+
+        if ($existingRating !== null) {
+            // Update rating
+            $updateSql = "UPDATE ratings SET rating = ? WHERE movie_id = ? AND user_id = ?";
+            $updateStmt = $conn->prepare($updateSql);
+            $updateStmt->bind_param("dii", $rating, $movie_id, $user_id);
+            $updateStmt->execute();
+            $existingRating = $rating;
+            echo "<script>alert('Rating berhasil diperbarui.');</script>";
+        } else {
+            // Masukkan rating baru
+            $insertSql = "INSERT INTO ratings (movie_id, user_id, rating) VALUES (?, ?, ?)";
+            $insertStmt = $conn->prepare($insertSql);
+            $insertStmt->bind_param("iid", $movie_id, $user_id, $rating);
+            $insertStmt->execute();
+            $existingRating = $rating;
+            echo "<script>alert('Rating berhasil ditambahkan.');</script>";
+        }
     }
-
-    $_SESSION['rating'] = $rating; // Optionally store the rating in session for feedback
 }
-
-// Simpan informasi nama movie ke session
-$movieId = isset($_GET['id']) ? $_GET['id'] : 0;
-
-// Ambil nama movie dari database
-$sql = "SELECT name FROM movies WHERE id = ?";
-$stmt = $conn->prepare($sql);
-$stmt->bind_param("i", $movieId);
-$stmt->execute();
-$stmt->bind_result($movieTitle);
-$stmt->fetch();
-$stmt->close();
-
-// Simpan nama movie ke session
-$_SESSION['last_movie'] = $movieTitle;
-
 ?>
 
 <!DOCTYPE html>
@@ -103,57 +102,23 @@ $_SESSION['last_movie'] = $movieTitle;
 
             <!-- Rating Options -->
             <div class="flex flex-col items-center">
-                <p class="text-lg mb-4">How much stars for the movie?</p>
-                <form action="reviews.php" method="POST">
-                    <div class="flex space-x-2" id="starRating">
-                        <!-- Star Icons with inline JavaScript interaction -->
-                        <svg onclick="setRating(1)" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="cursor-pointer star">
-                            <polygon points="12 2 15 8 22 9 17 14 18 21 12 17 6 21 7 14 2 9 9 8 12 2"></polygon>
-                        </svg>
-                        <svg onclick="setRating(2)" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="cursor-pointer star">
-                            <polygon points="12 2 15 8 22 9 17 14 18 21 12 17 6 21 7 14 2 9 9 8 12 2"></polygon>
-                        </svg>
-                        <svg onclick="setRating(3)" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="cursor-pointer star">
-                            <polygon points="12 2 15 8 22 9 17 14 18 21 12 17 6 21 7 14 2 9 9 8 12 2"></polygon>
-                        </svg>
-                        <svg onclick="setRating(4)" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="cursor-pointer star">
-                            <polygon points="12 2 15 8 22 9 17 14 18 21 12 17 6 21 7 14 2 9 9 8 12 2"></polygon>
-                        </svg>
-                        <svg onclick="setRating(5)" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="cursor-pointer star">
-                            <polygon points="12 2 15 8 22 9 17 14 18 21 12 17 6 21 7 14 2 9 9 8 12 2"></polygon>
-                        </svg>
-                    </div>
-                    
+                <form method="POST" action="">
                     <!-- Numeric Rating Input -->
-                    <p class="text-lg mt-4">OR</p>
                     <p class="text-lg mt-4">Tell us your score!</p>
                     <div class="w-20 h-16 bg-transparent border border-sky-200 rounded-full flex items-center justify-center mt-2 text-2xl">
-                        <input type="number" id="numericRating" name="rating" min="0" max="10" step="0.1" placeholder="0.0" class="bg-transparent text-center text-white w-full h-full rounded-full focus:outline-none" value="<?php echo $_SESSION['rating'] ?? ''; ?>" />
+                        <input type="number" id="numericRating" name="rating" min="1" max="10" step="0.1" placeholder="0.0" 
+                               class="bg-transparent text-center text-white w-full h-full rounded-full focus:outline-none"
+                               value="<?php echo $existingRating ?? ''; ?>" 
+                               <?php echo $existingRating ? 'readonly' : ''; ?>>
                     </div>
-                    <button type="submit" class="mt-4 px-6 py-2 bg-white text-black rounded-lg font-semibold">Submit Rating</button>
-                    <input type="hidden" name="id" value="<?php echo $movieId; ?>">
+                    <?php if ($existingRating !== null): ?>
+                        <button type="submit" name="enable_rating" class="mt-4 px-6 py-2 bg-blue-500 text-white rounded-lg font-istok">Change your rating?</button>
+                    <?php else: ?>
+                        <button type="submit" class="mt-4 px-6 py-2 bg-white text-black rounded-lg font-semibold">Submit Rating</button>
+                    <?php endif; ?>
                 </form>
             </div>
         </div>
-
-        <script>
-            // Function to set rating based on star click
-            function setRating(rating) {
-                document.getElementById('numericRating').value = rating;
-                updateStars(rating);
-            }
-
-            function updateStars(rating) {
-                const stars = document.querySelectorAll("#starRating .star");
-                stars.forEach((star, index) => {
-                    if (index < rating) {
-                        star.setAttribute("fill", "white");
-                    } else {
-                        star.setAttribute("fill", "none");
-                    }
-                });
-            }
-        </script>
     </div>
 
     <!-- Footer Section -->
