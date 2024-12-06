@@ -4,15 +4,5 @@
         <a href="ratings.php?id=<?= isset($movie_id) ? $movie_id : 0; ?>" class="hover:text-white">GIVE RATING</a>
         <a href="reviews.php?id=<?= isset($movie_id) ? $movie_id : 0; ?>" class="hover:text-white">GIVE REVIEW</a>
     </div>
-    <div class="flex space-x-4">
-        <a href="https://instagram.com" target="_blank" class="hover:text-white">
-            <i class='bx bxl-instagram text-2xl'></i>
-        </a>
-        <a href="https://facebook.com" target="_blank" class="hover:text-white">
-            <i class='bx bxl-facebook text-2xl'></i>
-        </a>
-        <a href="https://youtube.com" target="_blank" class="hover:text-white">
-            <i class='bx bxl-youtube text-2xl'></i>
-        </a>
-    </div>
 </div>
+

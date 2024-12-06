@@ -62,11 +62,16 @@ foreach ($comments as &$comment) {
     <link href="https://cdnjs.cloudflare.com/ajax/libs/boxicons/2.1.4/css/boxicons.min.css" rel="stylesheet">
     <link rel="stylesheet" href="css/style.css">
 </head>
-<body class="bg-gradient-to-b from-bg_red via-bg_red to-bg_red_2 text-white flex flex-col min-h-screen">
+<body class="bg-gradient-to-b from-bg_red via-bg_red to-bg_red_2 text-white flex flex-col min-h-screen relative">
     <div class="flex-1">
         <?php include 'header.php'; ?>
+          <!-- Back Button -->
+     <a href="movie.php?id=<?php echo $movie_id; ?>" class="absolute ml-10 mt-4 text-white text-2xl hover:text-gray-300 focus:outline-none p-2">
+    <i class='bx bx-arrow-back'></i>
+</a>
 
-        <div class="max-w-4xl mx-auto p-8">
+        <!-- Discuss Container -->
+        <div class="max-w-4xl mx-auto p-8 mt-10">
             <div class="text-center flex flex-row gap-8 mb-8">
                 <h1 class="text-3xl font-bold mb-6">Discussion Forum</h1>
                 <p class="text-lg mt-2 font-semibold"><?php echo htmlspecialchars($lastMovieName); ?></p>
@@ -85,7 +90,7 @@ foreach ($comments as &$comment) {
                             <div class="bg-gray-800 p-6 rounded-lg flex-1 text-sm">
                                 <p><strong><?php echo htmlspecialchars($comment['username']); ?>:</strong> <?php echo htmlspecialchars($comment['discussion_text']); ?></p>
                                 <div class=" bg-black bg-opacity-30 backdrop-blur-md mt-4 w-fit p-3 rounded-lg inline-block text-xs text-white px-2 py-1">
-                                    <p><?php echo date('d M Y', strtotime($comment['created_at'])); ?></p>
+                                    <p class="inset-98"><?php echo date('d M Y', strtotime($comment['created_at'])); ?></p>
                                 </div>
                             </div>
                         </div>
@@ -101,7 +106,7 @@ foreach ($comments as &$comment) {
                     <button type="submit" class="text-white bg-gray-700 px-4 py-2 rounded-lg text-sm">Send</button>
                 </form>
             </div>
-            <p id="errorMessage" class="text-red-500 mt-2 hidden"></p>
+            <p id="errorMessage" class="text-white-500 mt-2 hidden"></p>
         </div>
     </div>
 
@@ -159,6 +164,10 @@ foreach ($comments as &$comment) {
                 errorMessage.classList.remove('hidden');
             });
         });
+        window.onload = function() {
+    document.getElementById("discussionText").value = "";
+};
+
     </script>
 </body>
 </html>

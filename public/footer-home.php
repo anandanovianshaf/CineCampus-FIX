@@ -10,7 +10,7 @@
 </a>
 
     </div>
-    <div class="flex space-x-4">
+    <div class=" sosmed flex space-x-4">
         <a href="https://instagram.com" target="_blank" class="hover:text-white">
             <i class='bx bxl-instagram text-2xl'></i>
         </a>

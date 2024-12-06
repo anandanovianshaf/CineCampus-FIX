@@ -42,14 +42,21 @@ if ($result->num_rows > 0) {
             }, 5000);
         <?php endif; ?>
     </script>
+    <style>
+         @media (max-width: 480px) {
+            .footer .sosmed {
+                visibility:hidden;
+            }
+        }
+    </style>
 </head>
-<body class="bg-gradient-to-b from-bg_red via-bg_red to-bg_red_2 text-white">
+<body class="bg-gradient-to-b from-bg_red via-bg_red to-bg_red_2 text-white w-full">
     <!-- Header Section -->
     <?php include 'header.php'; ?>
 
     <!-- Main Content Section -->
     <main class="flex flex-col items-center py-8">
-        <div class="w-full min-h-screen">
+        <div class="w-fit min-h-screen">
             <h1 class="text-3xl font-bold mt-6 tracking-wider text-center">SEARCH RESULTS</h1>
             <p class="text-lg mt-2 text-center">
                 <?php echo isset($movie_name) ? "Search Results for \"$movie_name\"" : ""; ?>

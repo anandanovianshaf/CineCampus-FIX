@@ -58,7 +58,7 @@ if (isset($_POST['login'])) {
 
             <!-- Input Password -->
             <div class="relative mb-4">
-                <input type="password" name="password" placeholder="PASSWORD" class="w-full p-3 rounded bg-white bg-opacity-30 text-white placeholder-white focus:outline-none focus:ring-2 focus:ring-red-500" required>
+                <input type="password" name="password" placeholder="Password" class="w-full p-3 rounded bg-white bg-opacity-30 text-white placeholder-white focus:outline-none focus:ring-2 focus:ring-red-500" required>
                 <i class='bx bxs-key absolute right-3 top-3 text-white'></i>
             </div>
 

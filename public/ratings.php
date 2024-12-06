@@ -82,20 +82,28 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <title>CineCampus - Rating</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/boxicons/2.1.4/css/boxicons.min.css" rel="stylesheet">
     <link rel="stylesheet" href="css/style.css" />
+    
 </head>
-<body class="bg-gradient-to-b from-bg_red via-bg_red to-bg_red_2 text-white">
+<body class="bg-gradient-to-b from-bg_red via-bg_red to-bg_red_2 text-white relative">
     <!-- Header Section -->
     <?php include 'header.php'; ?>
 
     <!-- Rating Section -->
-    <div class="w-full flex flex-col items-center py-10 px-5 text-center">
+     <!-- Back Button -->
+     <a href="movie.php?id=<?php echo $movie_id; ?>" class="absolute ml-10 mt-4 text-white text-2xl hover:text-gray-300 focus:outline-none p-2">
+    <i class='bx bx-arrow-back'></i>
+</a>
+
+     
+    <div class="w-full min-h-screen flex flex-col items-center py-10 px-5 text-center">
+        
         <h1 class="text-4xl font-istok font-bold">RATINGS</h1>
         <p class="text-lg mt-3 font-istok">Place your rating about this movie here</p>
 
         <!-- Movie Poster and Rating Options -->
         <div class="flex flex-col md:flex-row items-center mt-8 space-y-5 md:space-y-0 md:space-x-10">
             <!-- Movie Poster -->
-            <div class="w-52 h-72 bg-black overflow-hidden">
+            <div class="w-52 h-72  bg-black overflow-hidden">
                 <img src="<?php echo $movie['poster']; ?>" alt="<?php echo htmlspecialchars($movie['name']); ?>" class="w-full h-full object-cover drop-shadow-2xl shadow-2xl">
                 <p class="mt-2 font-bold text-lg"><?php echo htmlspecialchars($movie['name']); ?></p>
             </div>

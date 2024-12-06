@@ -8,6 +8,7 @@ if (!isset($_SESSION['last_movie_id']) || empty($_SESSION['last_movie_id'])) {
 }
 
 $lastMovieId = $_SESSION['last_movie_id'];
+$movie_id = $lastMovieId;
 
 // Ambil nama film berdasarkan movie_id terakhir
 $sql = "SELECT name FROM movies WHERE id = ?";
@@ -68,12 +69,17 @@ $reviews = $stmt->get_result();
         }
     </style>
 </head>
-<body class="bg-gradient-to-b from-bg_red via-bg_red to-bg_red_2 text-white">
+<body class="bg-gradient-to-b from-bg_red via-bg_red to-bg_red_2 text-white relative">
     <!-- Header Section -->
     <?php include 'header.php'; ?>
 
-    <!-- Review Section -->
-    <div class="flex flex-col items-center justify-center min-h-screen">
+ 
+       <!-- Back Button -->
+       <a href="movie.php?id=<?php echo $movie_id; ?>" class="absolute ml-10 mt-4 text-white text-2xl hover:text-gray-300 focus:outline-none p-2">
+    <i class='bx bx-arrow-back'></i>
+</a>
+   <!-- Review Section -->
+    <div class="flex flex-col items-center justify-center min-h-screen mt-6">
         <h1 class="text-4xl font-istok font-bold text-white mt-10">REVIEWS</h1>
         <p class="text-lg font-istok text-gray-300 mt-2">WRITE YOUR REVIEW ABOUT THIS MOVIE HERE</p>
 
@@ -87,13 +93,13 @@ $reviews = $stmt->get_result();
             <p class="text-gray-300 mb-4">TO: <?php echo htmlspecialchars($lastMovieName); ?></p>
 
             <!-- Input Review -->
-            <textarea name="review" class="w-full h-64 p-4 text-gray-300 bg-[#2b1a1a] rounded-lg resize-none placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-[#FFC65D]" placeholder="WRITE HERE" required></textarea>
+            <textarea name="review" class="w-full h-64 p-4 text-gray-300 bg-[#2b1a1a] rounded-lg resize-none placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-[#FFC65D]" placeholder="WRITE HERE" required id="textBox"></textarea>
 
             <!-- Submit Button -->
             <button type="submit" class="mt-6 bg-white text-black px-6 py-2 rounded hover:bg-gray-300 transition duration-200">SUBMIT</button>
         </form>
 
-        <h2 id="all_reviews" class="text-3xl font-istok font-bold text-white mt-12">All Reviews for <?php echo htmlspecialchars($lastMovieName); ?></h2>
+        <h2 id="all_reviews" class="text-2xl font-istok font-bold text-white mt-12">All Reviews for <?php echo htmlspecialchars($lastMovieName); ?></h2>
 
         <?php if ($reviews->num_rows > 0): ?>
             <?php while ($review = $reviews->fetch_assoc()): ?>
@@ -111,5 +117,10 @@ $reviews = $stmt->get_result();
 
     <!-- Footer Section --> 
     <?php include 'footer.php'; ?>
+    <script>
+        window.onload = function() {
+    document.getElementById("textBox").value = "";
+};
+    </script>
 </body>
 </html>
